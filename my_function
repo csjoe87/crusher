@@ -1,0 +1,36 @@
+function myFunction() {
+  //declare global variables for ID of calculation sheet and docs for merge
+  var docTemplateID = "/* template docId from drive URL goes here */";
+  var docFinalID = "/* final/target docId from drive URL goes here */";
+  var source_ss_ID = "/* source sheet docId from drive URL goes here */";
+  
+  var docTemplate = DocumentApp.openById(docTemplateID);
+  var docFinal = DocumentApp.openById(docFinalID);
+  var link = SpreadsheetApp.getActive(); //broken - need to figure out how to transmit source_ss full URL to target
+  var ss = SpreadsheetApp.openById(/*source_ss_ID goes here*/).getSheetByName(/*insert name of sheet on source_ss_ID here as string*/);
+  var totmsa = ss.getRange('C5').getValue();
+  var futmed = ss.getRange('C3').getValue();
+  var futrx = ss.getRange('C1').getValue();
+  var rxlist = ss.getRange('B58').getValue();
+  var narr = ss.getRange('B51').getValue(); 
+  
+  var templateParagraphs = docTemplate.getBody().getParagraphs();
+  
+  createLetter(link, totmsa, futmed, futrx, rxlist, narr, templateParagraphs, docFinal);
+}
+
+function createLetter(link, totmsa, futmed, futrx, rxlist, narr, templateParagraphs, docFinal) {
+  
+    templateParagraphs.forEach(function(p){
+    docFinal.getBody().appendParagraph(
+      p
+      .copy()
+      .replaceText("{crusher_link}", link)
+      .replaceText("{total_msa_amount}", totmsa)
+      .replaceText("{future_medical}", futmed)
+      .replaceText("{future_rx}", futrx)
+      .replaceText("{list_drugs}", rxlist)
+      .replaceText("{msa_letter_narrative}", narr)
+    );
+  });
+}
